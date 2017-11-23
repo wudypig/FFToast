@@ -27,6 +27,8 @@ typedef void(^handler)(void);
 //Toast文字字体
 @property (strong, nonatomic) UIFont* messageFont;
 
+@property (assign, nonatomic) NSTextAlignment alignment;
+
 //Toast View圆角
 @property(assign,nonatomic)CGFloat toastCornerRadius;
 //Toast View透明度

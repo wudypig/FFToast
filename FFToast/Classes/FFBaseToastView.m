@@ -32,6 +32,8 @@
 @property (assign, nonatomic) CGSize iconImageSize;
 @property (assign, nonatomic) CGRect toastViewFrame;
 
+@property (strong, nonatomic) UIColor *defaultBackgroundColor;
+
 
 @property handler handler;
 
@@ -52,6 +54,8 @@ static NSMutableArray* toastArray = nil;
     
     self.titleString = title;
     self.messageString = message;
+	self.alignment = NSTextAlignmentLeft;
+	self.defaultBackgroundColor = [UIColor darkGrayColor];
     
     if (iconImage == nil) {
         if (self.toastType == FFToastPositionDefault) {
@@ -102,7 +106,7 @@ static NSMutableArray* toastArray = nil;
     
     self.messageLabel.textColor = _messageTextColor;
     self.messageLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    self.messageLabel.textAlignment = NSTextAlignmentLeft;
+    self.messageLabel.textAlignment = _alignment;
     self.messageLabel.numberOfLines = 0;
     self.messageLabel.font = _messageFont;
 
@@ -113,32 +117,34 @@ static NSMutableArray* toastArray = nil;
     //根据toastType设置背景色、icon
     switch (self.toastType) {
         case FFToastTypeDefault: {
-            self.toastBackgroundColor = [UIColor darkGrayColor];
+			if (!_toastBackgroundColor) {
+				self.toastBackgroundColor = [UIColor darkGrayColor];
+			}
             break;
         }
         case FFToastTypeSuccess: {
-            self.toastBackgroundColor = [UIColor colorWithRed:31.f/255.f green:177.f/255.f blue:138.f/255.f alpha:1.f];
+			self.defaultBackgroundColor = [UIColor colorWithRed:31.f/255.f green:177.f/255.f blue:138.f/255.f alpha:1.f];
             if (!_iconImage) {
                 self.iconImage = [UIImage imageWithName:@"fftoast_success"];
             }
             break;
         }
         case FFToastTypeError: {
-            self.toastBackgroundColor = [UIColor colorWithRed:255.f/255.f green:91.f/255.f blue:65.f/255.f alpha:1.f];
+			self.defaultBackgroundColor = [UIColor colorWithRed:255.f/255.f green:91.f/255.f blue:65.f/255.f alpha:1.f];
             if (!_iconImage) {
                 self.iconImage = [UIImage imageWithName:@"fftoast_error"];
             }
             break;
         }
         case FFToastTypeWarning: {
-            self.toastBackgroundColor = [UIColor colorWithRed:255.f/255.f green:134.f/255.f blue:0.f/255.f alpha:1.f];
+			self.defaultBackgroundColor = [UIColor colorWithRed:255.f/255.f green:134.f/255.f blue:0.f/255.f alpha:1.f];
             if (!_iconImage) {
                 self.iconImage = [UIImage imageWithName:@"fftoast_warning"];
             }
             break;
         }
         case FFToastTypeInfo: {
-            self.toastBackgroundColor = [UIColor colorWithRed:75.f/255.f green:107.f/255.f blue:122.f/255.f alpha:1.f];
+			self.defaultBackgroundColor = [UIColor colorWithRed:75.f/255.f green:107.f/255.f blue:122.f/255.f alpha:1.f];
             if (!_iconImage) {
                 self.iconImage = [UIImage imageWithName:@"fftoast_info"];
             }
@@ -335,29 +341,65 @@ static NSMutableArray* toastArray = nil;
     if (self.toastPosition == FFToastPositionDefault) {
         tempStatusBarHeight = STATUSBAR_HEIGHT;
     }
-    
-    CGFloat iconImageViewX = HORIZONTAL_SPACE;
-    CGFloat iconImageViewY = (_toastViewFrame.size.height - self.iconImageSize.width - tempStatusBarHeight)/2 + tempStatusBarHeight;
-    CGFloat iconImageViewW = self.iconImageSize.width;
-    CGFloat iconImageViewH = self.iconImageSize.height;
-    self.iconImageView.frame = CGRectMake(iconImageViewX, iconImageViewY, iconImageViewW, iconImageViewH);
-    
-    CGFloat titleLabelX = CGSizeEqualToSize(self.iconImageSize, CGSizeZero) ? HORIZONTAL_SPACE : iconImageViewX + iconImageViewW + HORIZONTAL_SPACE;
-    CGFloat titleLabelY = VERTICAL_SPACE + tempStatusBarHeight;
-    CGFloat titleLabelW = self.titleLabelSize.width;
-    CGFloat titleLabelH = self.titleLabelSize.height;
-    self.titleLabel.frame = CGRectMake(titleLabelX, titleLabelY, titleLabelW, titleLabelH);
-    
-    CGFloat messageLabelX = titleLabelX;
-    CGFloat messageLabelY = 0;
-    if (self.titleString == nil) {
-        messageLabelY = (self.toastViewFrame.size.height - self.messageLabelSize.height - tempStatusBarHeight)/2 + tempStatusBarHeight;
-    }else{
-        messageLabelY = titleLabelY + titleLabelH + VERTICAL_SPACE;
-    }
-    CGFloat messageLabelW = self.messageLabelSize.width;
-    CGFloat messageLabelH = self.messageLabelSize.height;
-    self.messageLabel.frame = CGRectMake(messageLabelX, messageLabelY, messageLabelW, messageLabelH);
+	
+	if (self.alignment == NSTextAlignmentLeft) {
+		
+		CGFloat iconImageViewX = HORIZONTAL_SPACE;
+		CGFloat iconImageViewY = (_toastViewFrame.size.height - self.iconImageSize.width - tempStatusBarHeight)/2 + tempStatusBarHeight;
+		CGFloat iconImageViewW = self.iconImageSize.width;
+		CGFloat iconImageViewH = self.iconImageSize.height;
+		self.iconImageView.frame = CGRectMake(iconImageViewX, iconImageViewY, iconImageViewW, iconImageViewH);
+		
+		CGFloat titleLabelX = CGSizeEqualToSize(self.iconImageSize, CGSizeZero) ? HORIZONTAL_SPACE : iconImageViewX + iconImageViewW + HORIZONTAL_SPACE;
+		CGFloat titleLabelY = VERTICAL_SPACE + tempStatusBarHeight;
+		CGFloat titleLabelW = self.titleLabelSize.width;
+		CGFloat titleLabelH = self.titleLabelSize.height;
+		self.titleLabel.frame = CGRectMake(titleLabelX, titleLabelY, titleLabelW, titleLabelH);
+		
+		CGFloat messageLabelX = titleLabelX;
+		CGFloat messageLabelY = 0;
+		if (self.titleString == nil) {
+			messageLabelY = (self.toastViewFrame.size.height - self.messageLabelSize.height - tempStatusBarHeight)/2 + tempStatusBarHeight;
+		}else{
+			messageLabelY = titleLabelY + titleLabelH + VERTICAL_SPACE;
+		}
+		CGFloat messageLabelW = self.messageLabelSize.width;
+		CGFloat messageLabelH = self.messageLabelSize.height;
+		self.messageLabel.frame = CGRectMake(messageLabelX, messageLabelY, messageLabelW, messageLabelH);
+	}
+	
+	if (self.alignment == NSTextAlignmentCenter) {
+		
+		CGFloat iconImageViewY = (_toastViewFrame.size.height - self.iconImageSize.width - tempStatusBarHeight)/2 + tempStatusBarHeight;
+		CGFloat iconImageViewW = self.iconImageSize.width;
+		CGFloat iconImageViewH = self.iconImageSize.height;
+		
+		CGFloat titleLabelY = VERTICAL_SPACE + tempStatusBarHeight;
+		CGFloat titleLabelW = self.titleLabelSize.width;
+		CGFloat titleLabelH = self.titleLabelSize.height;
+		
+		CGFloat messageLabelY = 0;
+		if (self.titleString == nil) {
+			messageLabelY = (self.toastViewFrame.size.height - self.messageLabelSize.height - tempStatusBarHeight)/2 + tempStatusBarHeight;
+		}else{
+			messageLabelY = titleLabelY + titleLabelH + VERTICAL_SPACE;
+		}
+		CGFloat messageLabelW = self.messageLabelSize.width;
+		CGFloat messageLabelH = self.messageLabelSize.height;
+		
+		CGFloat imageWidth = CGSizeEqualToSize(self.iconImageSize, CGSizeZero) ? 0 : iconImageViewW + HORIZONTAL_SPACE;
+		CGFloat maxLabelWidth = MAX(titleLabelW, messageLabelW);
+		CGFloat totalWidth = imageWidth + maxLabelWidth;
+		CGFloat startX = (_toastViewFrame.size.width - totalWidth) / 2.0;
+		
+		CGFloat iconImageViewX = startX;
+		CGFloat titleLabelX = startX + imageWidth;
+		CGFloat messageLabelX = titleLabelX;
+		
+		self.iconImageView.frame = CGRectMake(iconImageViewX, iconImageViewY, iconImageViewW, iconImageViewH);
+		self.titleLabel.frame = CGRectMake(titleLabelX, titleLabelY, titleLabelW, titleLabelH);
+		self.messageLabel.frame = CGRectMake(messageLabelX, messageLabelY, messageLabelW, messageLabelH);
+	}
     
     [self loadViewData];
     
@@ -370,9 +412,7 @@ static NSMutableArray* toastArray = nil;
     self.iconImageView.image = self.iconImage;
     self.titleLabel.text = self.titleString;
     self.messageLabel.text = self.messageString;
-    if (_toastBackgroundColor != nil) {
-        self.backgroundColor = _toastBackgroundColor;
-    }
+	self.backgroundColor = (_toastBackgroundColor) ? _toastBackgroundColor : _defaultBackgroundColor;
     
 }
 
