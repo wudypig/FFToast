@@ -77,6 +77,7 @@
             
         case 1:
             _toast.toastType = FFToastTypeSuccess;
+			_toast.toastBackgroundColor = [UIColor blueColor];
             break;
             
         case 2:
@@ -111,6 +112,7 @@
     _toast.toastBackgroundColor = nil;
     _toast.titleTextColor = nil;
     _toast.messageTextColor = nil;
+	_toast.alignment = NSTextAlignmentCenter;
     
     switch (_positionSC.selectedSegmentIndex) {
         case 0:

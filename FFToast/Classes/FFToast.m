@@ -139,6 +139,7 @@
             ffBaseToastView.dismissToastAnimated = _dismissToastAnimated;
             ffBaseToastView.toastPosition = _toastPosition;
             ffBaseToastView.toastType = _toastType;
+			ffBaseToastView.alignment = _alignment;
             [ffBaseToastView show];
             
             
@@ -237,9 +238,6 @@
     if (_toastBackgroundColor == nil) {
         if(_toastPosition == FFToastPositionCentre || _toastPosition == FFToastPositionCentreWithFillet){
             self.toastBackgroundColor = [UIColor whiteColor];
-
-        }else{
-            self.toastBackgroundColor = [UIColor darkGrayColor];
 
         }
     }
